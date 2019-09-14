@@ -421,7 +421,7 @@ int rf_zmq_open_multi(char* args, void** h, uint32_t nof_channels)
       }
     }
 
-    update_rates(handler, 1.92e6);
+    update_rates(handler, 3.125e6);
 
     //  Create ZMQ context
     handler->context = zmq_ctx_new();
