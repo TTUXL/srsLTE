@@ -39,10 +39,10 @@ uint32_t root_seq_idx     = 0;
 uint32_t seq_idx          = 0;
 uint32_t frequency_offset = 0;
 uint32_t zero_corr_zone   = 11;
-float timeadv = 0;
-uint32_t nof_frames = 20;
+float timeadv = 0; 
+uint32_t nof_frames = 20; 
 
-float uhd_rx_gain=40, uhd_tx_gain=60, uhd_freq=2.4e9;
+float uhd_rx_gain=40, uhd_tx_gain=60, uhd_freq=2.4e9; 
 char *uhd_args="";
 char *output_filename = "prach_rx";
 
@@ -155,9 +155,9 @@ int main(int argc, char **argv) {
   srslte_vec_save_file("generated", preamble, prach_len * sizeof(cf_t));
 
   cf_t *buffer = malloc(sizeof(cf_t)*flen*nof_frames);
-
-  // Send through UHD
-  srslte_rf_t rf;
+  
+  // Send through UHD 
+  srslte_rf_t rf; 
   printf("Opening RF device...\n");
   if (srslte_rf_open(&rf, uhd_args)) {
     ERROR("Error opening &uhd\n");
@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
   printf("Set RX gain: %.1f dB\n", uhd_rx_gain);
   printf("Set TX gain: %.1f dB\n", uhd_tx_gain);
   printf("Set TX/RX freq: %.2f MHz\n", uhd_freq/ 1000000);
-
+  
   srslte_rf_set_rx_gain(&rf, uhd_rx_gain);
   srslte_rf_set_tx_gain(&rf, uhd_tx_gain);
   srslte_rf_set_rx_freq(&rf, 0, uhd_freq);
@@ -175,9 +175,9 @@ int main(int argc, char **argv) {
 
   if (srate > 1e6 && (srate / 1000) > 0) {
     if (30720%(srate/1000) == 0) {
-      srslte_rf_set_master_clock_rate(&rf, 30.72e6);
+      srslte_rf_set_master_clock_rate(&rf, 30.72e6);        
     } else {
-      srslte_rf_set_master_clock_rate(&rf, 25e6);        
+      srslte_rf_set_master_clock_rate(&rf, 23.04e6);        
     }
   } else {
     printf("Invalid sampling rate %d Hz\n", srate);
@@ -191,14 +191,14 @@ int main(int argc, char **argv) {
   }
   srslte_rf_set_tx_srate(&rf, (double) srate);
   sleep(1);
-
+  
   cf_t *zeros = calloc(sizeof(cf_t),flen);
-
-  srslte_timestamp_t tstamp;
-
+  
+  srslte_timestamp_t tstamp; 
+  
   srslte_rf_start_rx_stream(&rf, false);
   uint32_t nframe=0;
-
+  
   while(nframe<nof_frames) {
     printf("Rx subframe %d\n", nframe);
     srslte_rf_recv_with_time(&rf, &buffer[flen*nframe], flen, true, &tstamp.full_secs, &tstamp.frac_secs);
@@ -206,15 +206,15 @@ int main(int argc, char **argv) {
     if (nframe==9 || nframe==8) {
       srslte_timestamp_add(&tstamp, 0, 2e-3-timeadv*1e-6);
       if (nframe==8) {
-        srslte_rf_send_timed2(&rf, zeros, flen, tstamp.full_secs, tstamp.frac_secs, true, false);
-        printf("Transmitting zeros\n");
+        srslte_rf_send_timed2(&rf, zeros, flen, tstamp.full_secs, tstamp.frac_secs, true, false);      
+        printf("Transmitting zeros\n");        
       } else {
-        srslte_rf_send_timed2(&rf, preamble, flen, tstamp.full_secs, tstamp.frac_secs, false, true);
-        printf("Transmitting PRACH\n");
+        srslte_rf_send_timed2(&rf, preamble, flen, tstamp.full_secs, tstamp.frac_secs, false, true);      
+        printf("Transmitting PRACH\n");      
       }
     }
   }
-
+  
   uint32_t indices[1024];
   float offsets[1024];
   uint32_t nof_detected;
@@ -224,10 +224,10 @@ int main(int argc, char **argv) {
   }
   printf("Nof detected PRACHs: %d\n", nof_detected);
   for (int i=0;i<nof_detected;i++) {
-    printf("%d/%d index=%d, offset=%.2f us (%d samples)\n",
+    printf("%d/%d index=%d, offset=%.2f us (%d samples)\n", 
            i, nof_detected, indices[i], offsets[i]*1e6, (int) (offsets[i]*srate));
   }
-
+  
   srslte_vec_save_file(output_filename,buffer,11*flen*sizeof(cf_t));
 
   srslte_rf_close(&rf);
