@@ -341,7 +341,7 @@ bool sync::cell_is_camping()
 
 /**
  * MAIN THREAD
- * 
+ *
  * The main thread process the SYNC state machine. Every state except IDLE must have exclusive access to
  * all variables. If any change of cell configuration must be done, the thread must be in IDLE.
  *
@@ -397,7 +397,7 @@ void sync::run_thread()
         phy_state.state_exit();
         break;
       case sync_state::SFN_SYNC:
-        
+
         /* SFN synchronization using MIB. run_subframe() receives and processes 1 subframe
          * and returns
          */
@@ -658,9 +658,9 @@ void sync::run_thread()
 
 
 /***************
- * 
+ *
  * Utility functions called by the main thread or by functions called by other threads
- * 
+ *
  */
 void sync::radio_overflow()
 {
@@ -1011,8 +1011,8 @@ sync::search::ret_code sync::search::run(srslte_cell_t* cell)
 
   if (p->srate_mode != SRATE_FIND) {
     p->srate_mode = SRATE_FIND;
-    p->radio_h->set_rx_srate(0, 1.92e6);
-    p->radio_h->set_tx_srate(0, 1.92e6);
+    p->radio_h->set_rx_srate(0, 3.125e6);
+    p->radio_h->set_tx_srate(0, 3.125e6);
     Info("SYNC:  Setting Cell Search sampling rate\n");
   }
 
