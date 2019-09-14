@@ -44,7 +44,7 @@ std::string file_pattern = "radio%d.dat";
 double freq = 2630e6;
 uint32_t    nof_radios   = 1;
 uint32_t    nof_ports    = 1;
-double srate = 3.125e6; /* Hz */
+double srate = 1.92e6; /* Hz */
 double      duration     = 0.01;   /* in seconds, 10 ms by default */
 cf_t*       buffers[SRSLTE_MAX_RADIOS][SRSLTE_MAX_PORTS];
 bool tx_enable = false;
