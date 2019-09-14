@@ -435,7 +435,7 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
         args = args2;
         handler->current_master_clock = 25000000;
         handler->dynamic_rate = false;
-        handler->devname = DEVNAME_210;
+        handler->devname = DEVNAME_N210;
       }
     }
 
