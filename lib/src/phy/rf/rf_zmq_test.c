@@ -185,22 +185,22 @@ exit:
 int main()
 {
   // single tx, single rx with continuous transmissions (no timed tx) using IPC transport
-  if (run_test("rx_port=ipc://link1,id=ue,base_srate=3.125e6", "tx_port=ipc://link1,id=enb,base_srate=3.125e6", false) !=
+  if (run_test("rx_port=ipc://link1,id=ue,base_srate=1.92e6", "tx_port=ipc://link1,id=enb,base_srate=1.92e6", false) !=
       SRSLTE_SUCCESS) {
     fprintf(stderr, "Single tx, single rx test failed!\n");
     return -1;
   }
 
   // two trx radios with continous tx (no timed tx) using TCP transport for both directions
-  if (run_test("tx_port=tcp://*:5554,rx_port=tcp://localhost:5555,id=ue,base_srate=3.125e6",
-               "rx_port=tcp://localhost:5554,tx_port=tcp://*:5555,id=enb,base_srate=3.125e6", false) != SRSLTE_SUCCESS) {
+  if (run_test("tx_port=tcp://*:5554,rx_port=tcp://localhost:5555,id=ue,base_srate=1.92e6",
+               "rx_port=tcp://localhost:5554,tx_port=tcp://*:5555,id=enb,base_srate=1.92e6", false) != SRSLTE_SUCCESS) {
     fprintf(stderr, "Two TRx radio test failed!\n");
     return -1;
   }
 
   // two trx radios with continous tx (no timed tx) using TCP for UL (UE tx) and IPC for eNB DL (eNB tx)
-  if (run_test("tx_port=tcp://*:5554,rx_port=ipc://dl,id=ue,base_srate=3.125e6",
-               "rx_port=tcp://localhost:5554,tx_port=ipc://dl,id=enb,base_srate=3.125e6", true) != SRSLTE_SUCCESS) {
+  if (run_test("tx_port=tcp://*:5554,rx_port=ipc://dl,id=ue,base_srate=1.92e6",
+               "rx_port=tcp://localhost:5554,tx_port=ipc://dl,id=enb,base_srate=1.92e6", true) != SRSLTE_SUCCESS) {
     fprintf(stderr, "Two TRx radio test with timed tx failed!\n");
     return -1;
   }
