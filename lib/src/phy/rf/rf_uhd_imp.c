@@ -482,7 +482,7 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
       } else if (strstr(dev_str, "n3xx")) {
         handler->devname = DEVNAME_N300;
       }
-    }else (!handler->devname) {
+    }else {
       handler->devname = DEVNAME_N210;
     }
 
