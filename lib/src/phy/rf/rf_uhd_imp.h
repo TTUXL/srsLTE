@@ -21,22 +21,21 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-
+  
 #include "srslte/config.h"
 #include "srslte/phy/rf/rf.h"
 
 #define DEVNAME_B200 "uhd_b200"
-#define DEVNAME_N210 "uhd_n210"
 #define DEVNAME_X300 "uhd_x300"
 #define DEVNAME_N300 "uhd_n300"
 #define DEVNAME_E3X0 "uhd_e3x0"
 
 
-SRSLTE_API int rf_uhd_open(char *args,
+SRSLTE_API int rf_uhd_open(char *args, 
                         void **handler);
 
-SRSLTE_API int rf_uhd_open_multi(char *args,
-                                 void **handler,
+SRSLTE_API int rf_uhd_open_multi(char *args, 
+                                 void **handler, 
                                  uint32_t nof_channels);
 
 SRSLTE_API char* rf_uhd_devname(void *h);
@@ -46,7 +45,7 @@ SRSLTE_API int rf_uhd_close(void *h);
 SRSLTE_API int rf_uhd_start_rx_stream(void *h,
                                       bool now);
 
-SRSLTE_API int rf_uhd_start_rx_stream_nsamples(void *h,
+SRSLTE_API int rf_uhd_start_rx_stream_nsamples(void *h, 
                                             uint32_t nsamples);
 
 SRSLTE_API int rf_uhd_stop_rx_stream(void *h);
@@ -55,19 +54,19 @@ SRSLTE_API void rf_uhd_flush_buffer(void *h);
 
 SRSLTE_API bool rf_uhd_has_rssi(void *h);
 
-SRSLTE_API float rf_uhd_get_rssi(void *h);
+SRSLTE_API float rf_uhd_get_rssi(void *h); 
 
 SRSLTE_API bool rf_uhd_rx_wait_lo_locked(void *h);
 
-SRSLTE_API void rf_uhd_set_master_clock_rate(void *h,
-                                          double rate);
+SRSLTE_API void rf_uhd_set_master_clock_rate(void *h, 
+                                          double rate); 
 
-SRSLTE_API bool rf_uhd_is_master_clock_dynamic(void *h);
+SRSLTE_API bool rf_uhd_is_master_clock_dynamic(void *h); 
 
-SRSLTE_API double rf_uhd_set_rx_srate(void *h,
+SRSLTE_API double rf_uhd_set_rx_srate(void *h, 
                                    double freq);
 
-SRSLTE_API double rf_uhd_set_rx_gain(void *h,
+SRSLTE_API double rf_uhd_set_rx_gain(void *h, 
                                   double gain);
 
 SRSLTE_API double rf_uhd_get_rx_gain(void *h);
@@ -94,12 +93,12 @@ SRSLTE_API int rf_uhd_recv_with_time_multi(void *h,
                                 uint32_t nsamples,
                                 bool blocking,
                                 time_t *secs,
-                                double *frac_secs);
+                                double *frac_secs); 
 
-SRSLTE_API double rf_uhd_set_tx_srate(void *h,
+SRSLTE_API double rf_uhd_set_tx_srate(void *h, 
                                     double freq);
 
-SRSLTE_API double rf_uhd_set_tx_gain(void *h,
+SRSLTE_API double rf_uhd_set_tx_gain(void *h, 
                                    double gain);
 
 SRSLTE_API double rf_uhd_set_tx_freq(void* h, uint32_t ch, double freq);
@@ -108,14 +107,14 @@ SRSLTE_API void rf_uhd_get_time(void* h, time_t* secs, double* frac_secs);
 
 SRSLTE_API void rf_uhd_sync_pps(void* h);
 
-SRSLTE_API int  rf_uhd_send_timed(void *h,
-                                  void *data,
+SRSLTE_API int  rf_uhd_send_timed(void *h, 
+                                  void *data, 
                                   int nsamples,
-                                  time_t secs,
-                                  double frac_secs,
+                                  time_t secs, 
+                                  double frac_secs, 
                                   bool has_time_spec,
-                                  bool blocking,
-                                  bool is_start_of_burst,
+                                  bool blocking, 
+                                  bool is_start_of_burst, 
                                   bool is_end_of_burst);
 
 SRSLTE_API int rf_uhd_send_timed_multi(void *h,
@@ -127,3 +126,4 @@ SRSLTE_API int rf_uhd_send_timed_multi(void *h,
                                        bool blocking,
                                        bool is_start_of_burst,
                                        bool is_end_of_burst);
+
