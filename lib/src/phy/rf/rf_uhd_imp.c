@@ -511,8 +511,8 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
 
     /* Set default rate to avoid decimation warnings */
     for (int i=0;i<nof_channels;i++) {
-      uhd_usrp_set_rx_rate(handler->usrp, 1.92e6, i);
-      uhd_usrp_set_tx_rate(handler->usrp, 1.92e6, i);
+      uhd_usrp_set_rx_rate(handler->usrp, 3.125e6, i);
+      uhd_usrp_set_tx_rate(handler->usrp, 3.125e6, i);
     }
 
     if (nof_channels > 1)
