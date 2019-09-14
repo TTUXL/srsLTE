@@ -434,6 +434,7 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
         snprintf(args2, sizeof(args2), "%s,master_clock_rate=25e6", args);
         args = args2;
         handler->current_master_clock = 25000000;
+        handler->dynamic_rate = false;
         handler->devname = DEVNAME_210;
       }
     }
@@ -481,9 +482,8 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
       } else if (strstr(dev_str, "n3xx")) {
         handler->devname = DEVNAME_N300;
       }
-    }
-    if (!handler->devname) {
-      handler->devname = DEVNAME_N210; 
+    }else (!handler->devname) {
+      handler->devname = DEVNAME_N210;
     }
 
     // Set external clock reference
