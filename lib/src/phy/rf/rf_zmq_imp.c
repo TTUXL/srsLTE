@@ -348,7 +348,7 @@ int rf_zmq_open_multi(char* args, void** h, uint32_t nof_channels)
     }
     bzero(handler, sizeof(rf_zmq_handler_t));
     *h                        = handler;
-    handler->base_srate       = 23.04e6; // Sample rate for 100 PRB cell
+    handler->base_srate       = 25e6; // Sample rate for 100 PRB cell
     handler->rx_gain          = 0.0;
     handler->info.max_rx_gain = +INFINITY;
     handler->info.min_rx_gain = -INFINITY;
@@ -421,7 +421,7 @@ int rf_zmq_open_multi(char* args, void** h, uint32_t nof_channels)
       }
     }
 
-    update_rates(handler, 1.92e6);
+    update_rates(handler, 3.125e6);
 
     //  Create ZMQ context
     handler->context = zmq_ctx_new();
