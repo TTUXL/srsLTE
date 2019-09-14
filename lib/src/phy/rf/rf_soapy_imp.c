@@ -361,8 +361,8 @@ int rf_soapy_open_multi(char* args, void** h, uint32_t num_requested_channels)
   }
 
   // init rx/tx rate to lowest LTE rate to avoid decimation warnings
-  rf_soapy_set_rx_srate(handler, 3.125e6);
-  rf_soapy_set_tx_srate(handler, 3.125e6);
+  rf_soapy_set_rx_srate(handler, 1.92e6);
+  rf_soapy_set_tx_srate(handler, 1.92e6);
 
   // list device sensors
   size_t list_length;
