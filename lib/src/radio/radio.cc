@@ -374,7 +374,11 @@ void radio::set_tx_srate(double srate)
 
       // In X300 TX/RX offset is independent of sampling rate
       nsamples = 45;
-    } else {
+    }else if (!strcmp(srslte_rf_name(&rf_device), "uhd_n210")) {
+
+      // I don't known ,I just guess
+      nsamples = 45;
+    }else {
       log_h->console("\nWarning TX/RX time offset has not been calibrated for device %s. Set a value manually\n\n",
                      srslte_rf_name(&rf_device));
     }
