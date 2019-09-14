@@ -41,7 +41,7 @@
 #define SRSLTE_TCOD_RATE 3
 #define SRSLTE_TCOD_TOTALTAIL 12
 
-#define SRSLTE_TCOD_MAX_LEN_CB     6144
+#define SRSLTE_TCOD_MAX_LEN_CB     10000
 
 typedef struct SRSLTE_API {
   uint32_t max_long_cb;
