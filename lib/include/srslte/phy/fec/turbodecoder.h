@@ -41,7 +41,7 @@
 #define SRSLTE_TCOD_RATE 3
 #define SRSLTE_TCOD_TOTALTAIL 12
 
-#define SRSLTE_TCOD_MAX_LEN_CB     10000
+#define SRSLTE_TCOD_MAX_LEN_CB     6144
 
 // Expect the input to be aligned for sub-block window processing.
 #define SRSLTE_TDEC_EXPECT_INPUT_SB 1
@@ -94,7 +94,7 @@ typedef struct SRSLTE_API {
   int n_iter;
 } srslte_tdec_t;
 
-SRSLTE_API int srslte_tdec_init(srslte_tdec_t * h,
+SRSLTE_API int srslte_tdec_init(srslte_tdec_t * h, 
                                 uint32_t max_long_cb);
 
 SRSLTE_API int srslte_tdec_init_manual(srslte_tdec_t * h,
@@ -114,14 +114,14 @@ SRSLTE_API uint32_t srslte_tdec_autoimp_get_subblocks(uint32_t long_cb);
 
 SRSLTE_API uint32_t srslte_tdec_autoimp_get_subblocks_8bit(uint32_t long_cb);
 
-SRSLTE_API void srslte_tdec_iteration(srslte_tdec_t * h,
+SRSLTE_API void srslte_tdec_iteration(srslte_tdec_t * h, 
                                       int16_t* input,
                                       uint8_t *output);
 
 SRSLTE_API int srslte_tdec_run_all(srslte_tdec_t * h,
                                    int16_t * input,
                                    uint8_t *output,
-                                   uint32_t nof_iterations,
+                                   uint32_t nof_iterations, 
                                    uint32_t long_cb);
 
 SRSLTE_API void srslte_tdec_iteration_8bit(srslte_tdec_t * h,
