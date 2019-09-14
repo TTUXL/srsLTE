@@ -37,28 +37,28 @@
 #endif /* UHD_VERSION < 3140000 */
 
 typedef struct {
-  char *devname;
+  char *devname; 
   uhd_usrp_handle usrp;
   uhd_rx_streamer_handle rx_stream;
   uhd_tx_streamer_handle tx_stream;
-
-  uhd_rx_metadata_handle rx_md, rx_md_first;
-  uhd_tx_metadata_handle tx_md;
-
+  
+  uhd_rx_metadata_handle rx_md, rx_md_first; 
+  uhd_tx_metadata_handle tx_md; 
+  
   srslte_rf_info_t info;
   size_t rx_nof_samples;
   size_t tx_nof_samples;
   double tx_rate;
-  bool dynamic_rate;
-  bool has_rssi;
+  bool dynamic_rate; 
+  bool has_rssi; 
   uint32_t nof_rx_channels;
   int nof_tx_channels;
 
-  srslte_rf_error_handler_t uhd_error_handler;
+  srslte_rf_error_handler_t uhd_error_handler; 
 
   float current_master_clock;
 
-  bool async_thread_running;
+  bool async_thread_running; 
   pthread_t async_thread;
 
   pthread_mutex_t tx_mutex;
@@ -71,7 +71,7 @@ void suppress_handler(const char *x)
 
 cf_t zero_mem[64*1024];
 
-static void log_overflow(rf_uhd_handler_t *h) {
+static void log_overflow(rf_uhd_handler_t *h) {  
   if (h->uhd_error_handler) {
     srslte_rf_error_t error;
     bzero(&error, sizeof(srslte_rf_error_t));
@@ -91,7 +91,7 @@ static void log_late(rf_uhd_handler_t *h, bool is_rx) {
 }
 
 #if HAVE_ASYNC_THREAD
-static void log_underflow(rf_uhd_handler_t *h) {
+static void log_underflow(rf_uhd_handler_t *h) {  
   if (h->uhd_error_handler) {
     srslte_rf_error_t error;
     bzero(&error, sizeof(srslte_rf_error_t));
@@ -116,17 +116,17 @@ static void log_rx_error(rf_uhd_handler_t *h) {
 
 #if HAVE_ASYNC_THREAD
 static void* async_thread(void *h) {
-  rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;
-  uhd_async_metadata_handle md;
-  uhd_async_metadata_make(&md);
+  rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h; 
+  uhd_async_metadata_handle md; 
+  uhd_async_metadata_make(&md); 
   while(handler->async_thread_running) {
-    bool valid;
+    bool valid; 
     uhd_error err = uhd_tx_streamer_recv_async_msg(handler->tx_stream, &md, 0.5, &valid);
     if (err == UHD_ERROR_NONE) {
       if (valid) {
-        uhd_async_metadata_event_code_t event_code;
+        uhd_async_metadata_event_code_t event_code; 
         uhd_async_metadata_event_code(md, &event_code);
-        if (event_code == UHD_ASYNC_METADATA_EVENT_CODE_UNDERFLOW ||
+        if (event_code == UHD_ASYNC_METADATA_EVENT_CODE_UNDERFLOW || 
             event_code == UHD_ASYNC_METADATA_EVENT_CODE_UNDERFLOW_IN_PACKET) {
           log_underflow(handler);
         } else if (event_code == UHD_ASYNC_METADATA_EVENT_CODE_TIME_ERROR) {
@@ -135,11 +135,11 @@ static void* async_thread(void *h) {
       }
     } else {
       ERROR("Error while receiving aync metadata: 0x%x\n", err);
-      return NULL;
+      return NULL; 
     }
   }
   uhd_async_metadata_free(&md);
-  return NULL;
+  return NULL; 
 }
 #endif
 
@@ -153,7 +153,7 @@ void rf_uhd_register_error_handler(void *h, srslte_rf_error_handler_t new_handle
   handler->uhd_error_handler = new_handler;
 }
 
-static bool find_string(uhd_string_vector_handle h, char *str)
+static bool find_string(uhd_string_vector_handle h, char *str) 
 {
   char buff[128];
   size_t n;
@@ -161,16 +161,16 @@ static bool find_string(uhd_string_vector_handle h, char *str)
   for (int i=0;i<n;i++) {
     uhd_string_vector_at(h, i, buff, 128);
     if (strstr(buff, str)) {
-      return true;
+      return true; 
     }
   }
-  return false;
+  return false; 
 }
 
 static bool isLocked(rf_uhd_handler_t *handler, char *sensor_name, bool is_rx, uhd_sensor_value_handle *value_h)
 {
-  bool val_out = false;
-
+  bool val_out = false; 
+  
   if (sensor_name) {
     if (is_rx) {
       uhd_usrp_get_rx_sensor(handler->usrp, sensor_name, 0, value_h);
@@ -180,22 +180,22 @@ static bool isLocked(rf_uhd_handler_t *handler, char *sensor_name, bool is_rx, u
     uhd_sensor_value_to_bool(*value_h, &val_out);
   } else {
     usleep(500);
-    val_out = true;
+    val_out = true; 
   }
-
+    
   return val_out;
 }
 
 char* rf_uhd_devname(void* h)
 {
   rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;
-  return handler->devname;
+  return handler->devname; 
 }
 
 bool rf_uhd_rx_wait_lo_locked(void *h)
 {
   rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;
-
+  
   uhd_string_vector_handle mb_sensors;
   uhd_string_vector_handle rx_sensors;
   char *sensor_name;
@@ -213,7 +213,7 @@ bool rf_uhd_rx_wait_lo_locked(void *h)
   } else {
     sensor_name = NULL;
   }
-
+  
   double report = 0.0;
   while (!isLocked(handler, sensor_name, false, &value_h) && report < 30.0) {
     report += 0.1;
@@ -221,7 +221,7 @@ bool rf_uhd_rx_wait_lo_locked(void *h)
   }
 
   bool val = isLocked(handler, sensor_name, false, &value_h);
-
+  
   uhd_string_vector_free(&mb_sensors);
   uhd_string_vector_free(&rx_sensors);
   uhd_sensor_value_free(&value_h);
@@ -255,39 +255,39 @@ int rf_uhd_stop_rx_stream(void *h)
   uhd_stream_cmd_t stream_cmd = {
         .stream_mode = UHD_STREAM_MODE_STOP_CONTINUOUS,
         .stream_now = true
-  };
+  };  
   uhd_rx_streamer_issue_stream_cmd(handler->rx_stream, &stream_cmd);
   return 0;
 }
 
 void rf_uhd_flush_buffer(void *h)
 {
-  int n;
+  int n; 
   cf_t tmp1[1024];
   cf_t tmp2[1024];
   void *data[2] = {tmp1, tmp2};
   do {
     n = rf_uhd_recv_with_time_multi(h, data, 1024, 0, NULL, NULL);
-  } while (n > 0);
+  } while (n > 0);  
 }
 
 bool rf_uhd_has_rssi(void *h) {
-  rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;
+  rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;  
   return handler->has_rssi;
 }
 
 bool get_has_rssi(void *h) {
-  rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;
-  uhd_string_vector_handle rx_sensors;
+  rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;  
+  uhd_string_vector_handle rx_sensors;  
   uhd_string_vector_make(&rx_sensors);
   uhd_usrp_get_rx_sensor_names(handler->usrp, 0, &rx_sensors);
-  bool ret = find_string(rx_sensors, "rssi");
+  bool ret = find_string(rx_sensors, "rssi"); 
   uhd_string_vector_free(&rx_sensors);
-  return ret;
+  return ret; 
 }
 
 float rf_uhd_get_rssi(void *h) {
-  rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;
+  rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;  
   if (handler->has_rssi) {
     double val_out;
 
@@ -311,15 +311,15 @@ int rf_uhd_open(char *args, void **h)
 int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
 {
   if (h) {
-    *h = NULL;
-
+    *h = NULL; 
+    
     rf_uhd_handler_t *handler = (rf_uhd_handler_t*) malloc(sizeof(rf_uhd_handler_t));
     if (!handler) {
       perror("malloc");
-      return -1;
+      return -1; 
     }
     bzero(handler, sizeof(rf_uhd_handler_t));
-    *h = handler;
+    *h = handler; 
 
     // Disable fast-path (U/L/O) messages
     setenv("UHD_LOG_FASTPATH_DISABLE", "1", 0);
@@ -331,22 +331,22 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
     uhd_string_vector_handle devices_str;
     uhd_string_vector_make(&devices_str);
     uhd_usrp_find("", &devices_str);
-
-    char args2[512];
-
+    
+    char args2[512]; 
+    
     handler->dynamic_rate = true;
-
+    
     // Allow NULL parameter
     if (args == NULL) {
       args = "";
-    }
+    }           
     handler->devname = NULL;
 
     pthread_mutex_init(&handler->tx_mutex, NULL);
 
     // Initialize handler
     handler->uhd_error_handler = NULL;
-
+    
     bzero(zero_mem, sizeof(cf_t)*64*1024);
 
     // Check external clock argument
@@ -422,7 +422,19 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
         handler->current_master_clock = 184320000;
         handler->dynamic_rate = false;
         handler->devname = DEVNAME_X300;
-      } else {
+      } else if (find_string(devices_str, "type=e3x0")) {
+        // Else if E3X0 is available, set master clock rate now (can't be changed later)
+        args = "type=e3x0,master_clock_rate=30.72e6";
+        handler->dynamic_rate = false;
+        handler->devname = DEVNAME_E3X0;
+      } else if (find_string(devices_str, "type=n3xx")) {
+        args = "type=n3xx,master_clock_rate=122.88e6";
+        handler->current_master_clock = 122880000;
+        handler->dynamic_rate = false;
+        handler->devname = DEVNAME_N300;
+        srslte_use_standard_symbol_size(true);
+      }
+    } else {
       // If args is set and x300 type is specified, make sure master_clock_rate is defined
       if (strstr(args, "type=x300") && !strstr(args, "master_clock_rate")) {
         sprintf(args2, "%s,master_clock_rate=184.32e6",args);
@@ -430,24 +442,34 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
         handler->current_master_clock = 184320000;
         handler->dynamic_rate = false;
         handler->devname = DEVNAME_X300;
-      } else {
-        snprintf(args2, sizeof(args2), "%s,master_clock_rate=25e6", args);
+      } else if (strstr(args, "type=n3xx")) {
+        sprintf(args2, "%s,master_clock_rate=122.88e6", args);
         args = args2;
-        handler->current_master_clock = 25000000;
+        handler->current_master_clock = 122880000;
         handler->dynamic_rate = false;
-        handler->devname = DEVNAME_N210;
+        handler->devname = DEVNAME_N300;
+        srslte_use_standard_symbol_size(true);
+     } else if (strstr(args, "type=e3x0")) {
+        snprintf(args2, sizeof(args2), "%s,master_clock_rate=30.72e6", args);
+        args = args2;
+        handler->devname = DEVNAME_E3X0;
+      } else {
+        snprintf(args2, sizeof(args2), "%s,master_clock_rate=23.04e6", args);
+        args = args2;
+        handler->current_master_clock = 23040000;
+        handler->devname = DEVNAME_B200;
       }
     }
-
+    
     uhd_string_vector_free(&devices_str);
-
+    
     /* Create UHD handler */
     printf("Opening USRP with args: %s\n", args);
     uhd_error error = uhd_usrp_make(&handler->usrp, args);
     if (error) {
       fprintf(stderr, "Error opening UHD: code %d\n", error);
       free(handler);
-      return -1;
+      return -1; 
     }
 
     /* Set transmitter subdev spec if specified */
@@ -478,15 +500,16 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
       if (strstr(dev_str, "B2") || strstr(dev_str, "B2")) {
         handler->devname = DEVNAME_B200;
       } else if (strstr(dev_str, "X3") || strstr(dev_str, "X3")) {
-        handler->devname = DEVNAME_X300;
+        handler->devname = DEVNAME_X300;        
       } else if (strstr(dev_str, "n3xx")) {
         handler->devname = DEVNAME_N300;
       }
-    }else {
-      handler->devname = DEVNAME_N210;
     }
-
-    // Set external clock reference
+    if (!handler->devname) {
+      handler->devname = "uhd_unknown"; 
+    }
+    
+    // Set external clock reference   
     if (clock_src == EXTERNAL) {
       uhd_usrp_set_clock_source(handler->usrp, "external", 0);
       uhd_usrp_set_time_source(handler->usrp, "external", 0);
@@ -505,14 +528,14 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
           .channel_list = channel,
           .n_channels = nof_channels,
     };
-
+      
     handler->nof_rx_channels = nof_channels;
     handler->nof_tx_channels = nof_channels;
 
     /* Set default rate to avoid decimation warnings */
     for (int i=0;i<nof_channels;i++) {
-      uhd_usrp_set_rx_rate(handler->usrp, 3.125e6, i);
-      uhd_usrp_set_tx_rate(handler->usrp, 3.125e6, i);
+      uhd_usrp_set_rx_rate(handler->usrp, 1.92e6, i);
+      uhd_usrp_set_tx_rate(handler->usrp, 1.92e6, i);
     }
 
     if (nof_channels > 1)
@@ -523,15 +546,15 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
     error = uhd_usrp_get_rx_stream(handler->usrp, &stream_args, handler->rx_stream);
     if (error) {
       ERROR("Error opening RX stream: %d\n", error);
-      return -1;
+      return -1; 
     }
     uhd_tx_streamer_make(&handler->tx_stream);
     error = uhd_usrp_get_tx_stream(handler->usrp, &stream_args, handler->tx_stream);
     if (error) {
       ERROR("Error opening TX stream: %d\n", error);
-      return -1;
+      return -1; 
     }
-
+    
     uhd_rx_streamer_max_num_samps(handler->rx_stream, &handler->rx_nof_samples);
     uhd_tx_streamer_max_num_samps(handler->tx_stream, &handler->tx_nof_samples);
 
@@ -573,7 +596,7 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
 
     return 0;
   } else {
-    return SRSLTE_ERROR_INVALID_INPUTS;
+    return SRSLTE_ERROR_INVALID_INPUTS; 
   }
 }
 
@@ -581,9 +604,9 @@ int rf_uhd_open_multi(char *args, void **h, uint32_t nof_channels)
 int rf_uhd_close(void *h)
 {
   rf_uhd_stop_rx_stream(h);
-
+  
   rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;
-
+  
   uhd_tx_metadata_free(&handler->tx_md);
   uhd_rx_metadata_free(&handler->rx_md_first);
   uhd_rx_metadata_free(&handler->rx_md);
@@ -600,7 +623,7 @@ int rf_uhd_close(void *h)
   uhd_usrp_free(&handler->usrp);
 
   free(handler);
-
+  
   /** Something else to close the USRP?? */
   return SRSLTE_SUCCESS;
 }
@@ -666,7 +689,7 @@ double rf_uhd_set_tx_srate(void *h, double freq)
     uhd_usrp_set_tx_rate(handler->usrp, freq, 0);
   }
   handler->tx_rate = freq;
-  return freq;
+  return freq; 
 }
 
 double rf_uhd_set_rx_gain(void *h, double gain)
@@ -690,7 +713,7 @@ double rf_uhd_set_tx_gain(void *h, double gain)
 double rf_uhd_get_rx_gain(void *h)
 {
   rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;
-  double gain;
+  double gain; 
   uhd_usrp_get_rx_gain(handler->usrp, 0, "", &gain);
   return gain;
 }
@@ -698,7 +721,7 @@ double rf_uhd_get_rx_gain(void *h)
 double rf_uhd_get_tx_gain(void *h)
 {
   rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;
-  double gain;
+  double gain; 
   uhd_usrp_get_tx_gain(handler->usrp, 0, "", &gain);
   return gain;
 }
@@ -770,7 +793,7 @@ int rf_uhd_recv_with_time(void *h,
                     uint32_t nsamples,
                     bool blocking,
                     time_t *secs,
-                    double *frac_secs)
+                    double *frac_secs) 
 {
   return rf_uhd_recv_with_time_multi(h, &data, nsamples, blocking, secs, frac_secs);
 }
@@ -780,16 +803,16 @@ int rf_uhd_recv_with_time_multi(void *h,
                                 uint32_t nsamples,
                                 bool blocking,
                                 time_t *secs,
-                                double *frac_secs)
+                                double *frac_secs) 
 {
   rf_uhd_handler_t *handler = (rf_uhd_handler_t*) h;
-  uhd_rx_metadata_handle *md = &handler->rx_md_first;
+  uhd_rx_metadata_handle *md = &handler->rx_md_first; 
   size_t rxd_samples = 0;
   size_t rxd_samples_total = 0;
-  int trials = 0;
+  int trials = 0; 
   if (blocking) {
     while (rxd_samples_total < nsamples && trials < 100) {
-      void *buffs_ptr[4];
+      void *buffs_ptr[4]; 
       for (int i=0;i<handler->nof_rx_channels;i++) {
         cf_t *data_c = (cf_t*) data[i];
         buffs_ptr[i] = &data_c[rxd_samples_total];
@@ -799,12 +822,12 @@ int rf_uhd_recv_with_time_multi(void *h,
       size_t num_rx_samples = (num_samps_left > handler->rx_nof_samples) ? handler->rx_nof_samples : num_samps_left;
 
       rxd_samples = 0;
-      uhd_error error = uhd_rx_streamer_recv(handler->rx_stream, buffs_ptr,
+      uhd_error error = uhd_rx_streamer_recv(handler->rx_stream, buffs_ptr, 
                                              num_rx_samples, md, 1.0, false, &rxd_samples);
       if (error) {
         ERROR("Error receiving from UHD: %d\n", error);
         log_rx_error(handler);
-        return -1;
+        return -1; 
       }
 
       uhd_rx_metadata_error_code_t error_code = 0;
@@ -840,16 +863,16 @@ int rf_uhd_recv_with_time_multi(void *h,
   }
   return rxd_samples_total;
 }
-
+                   
 int rf_uhd_send_timed(void *h,
                      void *data,
                      int nsamples,
                      time_t secs,
-                     double frac_secs,
+                     double frac_secs,                      
                      bool has_time_spec,
                      bool blocking,
                      bool is_start_of_burst,
-                     bool is_end_of_burst)
+                     bool is_end_of_burst) 
 {
   void *_data[SRSLTE_MAX_PORTS]= {data, zero_mem, zero_mem, zero_mem};
 
@@ -897,12 +920,12 @@ int rf_uhd_send_timed_multi(void *h,
       } else {
         uhd_tx_metadata_set_start(&handler->tx_md, false);
       }
-
+      
       // middle packets are never end of burst, last one as defined
       if (nsamples - n > tx_samples) {
         uhd_tx_metadata_set_end(&handler->tx_md, false);
       } else {
-        tx_samples = nsamples - n;
+        tx_samples = nsamples - n; 
         uhd_tx_metadata_set_end(&handler->tx_md, is_end_of_burst);
       }
 
@@ -911,13 +934,13 @@ int rf_uhd_send_timed_multi(void *h,
         void *buff = (void*) &data_c[i][n];
         buffs_ptr[i] = buff;
       }
-      uhd_error error = uhd_tx_streamer_send(handler->tx_stream, buffs_ptr,
+      uhd_error error = uhd_tx_streamer_send(handler->tx_stream, buffs_ptr, 
                                              tx_samples, &handler->tx_md, 1.0, &txd_samples);
       if (error) {
         ERROR("Error sending to UHD: %d\n", error);
         goto unlock;
       }
-      // Increase time spec
+      // Increase time spec 
       uhd_tx_metadata_add_time_spec(&handler->tx_md, txd_samples/handler->tx_rate);
       n += txd_samples;
       trials++;
@@ -947,3 +970,4 @@ unlock:
   pthread_mutex_unlock(&handler->tx_mutex);
   return ret;
 }
+
